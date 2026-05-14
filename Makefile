@@ -1,29 +1,41 @@
-# ── Makefile for Lex-based Lexical Analyzer ─────────────────────
+# ── Makefile for Lex + Yacc Lexical Analyzer ─────────────────────
+#
+# Tools used:
+#   lex   – generates lex.yy.c  from lexer.l
+#   yacc  – generates y.tab.c and y.tab.h from parser.y
+#   gcc   – compiles both C files into the final binary
+#
+# Build:  make
+# Run:    make run
+# Clean:  make clean
 
 CC      = gcc
-FLEX    = flex
+LEX     = lex
+YACC    = yacc
 CFLAGS  = -Wall -Wextra
 TARGET  = lexer
-LEX_SRC = lexer.l
-LEX_C   = lex.yy.c
 INPUT   = test_input.c
 
 .PHONY: all run clean
 
 all: $(TARGET)
 
-# Step 1: Flex generates lex.yy.c from lexer.l
-$(LEX_C): $(LEX_SRC) tokens.h
-	$(FLEX) $(LEX_SRC)
+# Step 1: Yacc generates y.tab.c (parser) and y.tab.h (token codes)
+y.tab.c y.tab.h: parser.y
+	$(YACC) -d parser.y
 
-# Step 2: gcc compiles lex.yy.c into the lexer binary
-$(TARGET): $(LEX_C)
-	$(CC) $(CFLAGS) -o $(TARGET) $(LEX_C) -lfl 2>/dev/null || \
-	$(CC) $(CFLAGS) -o $(TARGET) $(LEX_C)   # fallback if -lfl absent
+# Step 2: Lex generates lex.yy.c (scanner) using token codes from y.tab.h
+lex.yy.c: lexer.l y.tab.h
+	$(LEX) lexer.l
 
-# Step 3: Run the lexer on the test file
+# Step 3: Compile both generated C files into one binary
+$(TARGET): y.tab.c lex.yy.c
+	$(CC) $(CFLAGS) -o $(TARGET) y.tab.c lex.yy.c -ll -ly
+
+# Run the lexer on the test input
 run: $(TARGET)
 	./$(TARGET) $(INPUT)
 
+# Remove all generated files
 clean:
-	rm -f $(LEX_C) $(TARGET)
+	rm -f lex.yy.c y.tab.c y.tab.h $(TARGET)

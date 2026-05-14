@@ -1,36 +1,14 @@
-/* Sample C program to test the lexical analyzer */
-// Demonstrates keywords, identifiers, operators, constants
-
-#include <stdio.h>
-
-int factorial(int n) {
-    if (n <= 1)
-        return 1;
-    return n * factorial(n - 1);
-}
-
 int main() {
-    int x = 10;
-    float pi = 3.14;
-    char grade = 'A';
-    int result;
-
-    /* Compute factorial using a loop */
-    result = 1;
-    for (int i = 1; i <= x; i++) {
-        result *= i;
+    int a = 10;
+    int arr[10]={1,2,3,4,5,6,7,8,9,10};
+    int n=arr.size();
+    float b = 5.5;
+    if(a > 5) {
+        a++;
     }
-
-    // Conditional check
-    if (result > 1000 && x != 0) {
-        result += 5;
-    } else {
-        result--;
+    for(int i=0;i<n;i++)
+    {
+        printf(arr[i],%d);
     }
-
-    while (x > 0) {
-        x -= 2;
-    }
-
     return 0;
 }
